@@ -21,6 +21,8 @@ matrix:
   fast_finish: true
 
 before_install:
+- rsync -az ${TRAVIS_BUILD_DIR}/ $HOME/gopath/src/github.com/bitly/oauth2_proxy/
+- cd $HOME/gopath/src/github.com/bitly/oauth2_proxy
 - go get -u github.com/golang/dep/cmd/dep
 
 install:
