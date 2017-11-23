@@ -7,8 +7,8 @@ import (
 
 	"golang.org/x/oauth2"
 
-	oidc "github.com/coreos/go-oidc"
 	"github.com/bitly/oauth2_proxy/errors"
+	oidc "github.com/coreos/go-oidc"
 )
 
 type OIDCProvider struct {
@@ -50,8 +50,8 @@ func (p *OIDCProvider) Redeem(redirectURL, code string) (s *SessionState, err er
 
 	// Extract custom claims.
 	var claims struct {
-		Email    string `json:"email"`
-		Verified *bool  `json:"email_verified"`
+		Email    string   `json:"email"`
+		Verified *bool    `json:"email_verified"`
 		Groups   []string `json:"groups"`
 	}
 	if err := idToken.Claims(&claims); err != nil {

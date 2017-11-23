@@ -64,16 +64,16 @@ type Options struct {
 
 	// These options allow for other providers besides Google, with
 	// potential overrides.
-	Provider          		string `flag:"provider" cfg:"provider"`
-	OIDCIssuerURL     		string `flag:"oidc-issuer-url" cfg:"oidc_issuer_url"`
-	OIDCAllowedGroupsPattern     	string `flag:"oidc-allowed-groups-pattern" cfg:"oidc_allowed_groups_pattern"`
-	LoginURL          		string `flag:"login-url" cfg:"login_url"`
-	RedeemURL         		string `flag:"redeem-url" cfg:"redeem_url"`
-	ProfileURL        		string `flag:"profile-url" cfg:"profile_url"`
-	ProtectedResource 		string `flag:"resource" cfg:"resource"`
-	ValidateURL       		string `flag:"validate-url" cfg:"validate_url"`
-	Scope             		string `flag:"scope" cfg:"scope"`
-	ApprovalPrompt    		string `flag:"approval-prompt" cfg:"approval_prompt"`
+	Provider                 string `flag:"provider" cfg:"provider"`
+	OIDCIssuerURL            string `flag:"oidc-issuer-url" cfg:"oidc_issuer_url"`
+	OIDCAllowedGroupsPattern string `flag:"oidc-allowed-groups-pattern" cfg:"oidc_allowed_groups_pattern"`
+	LoginURL                 string `flag:"login-url" cfg:"login_url"`
+	RedeemURL                string `flag:"redeem-url" cfg:"redeem_url"`
+	ProfileURL               string `flag:"profile-url" cfg:"profile_url"`
+	ProtectedResource        string `flag:"resource" cfg:"resource"`
+	ValidateURL              string `flag:"validate-url" cfg:"validate_url"`
+	Scope                    string `flag:"scope" cfg:"scope"`
+	ApprovalPrompt           string `flag:"approval-prompt" cfg:"approval_prompt"`
 
 	RequestLogging bool `flag:"request-logging" cfg:"request_logging"`
 
@@ -284,7 +284,7 @@ func parseProviderInfo(o *Options, msgs []string) []string {
 			p.Verifier = o.oidcVerifier
 		}
 
-		compiledRegexp, err := regexp.Compile(o.OIDCAllowedGroupsPattern);
+		compiledRegexp, err := regexp.Compile(o.OIDCAllowedGroupsPattern)
 		if err != nil {
 			msgs = append(msgs, fmt.Sprintf("error compiling regex=%q passed in oidc-allowed-groups-pattern parameter %s", o.OIDCAllowedGroupsPattern, err))
 		}
