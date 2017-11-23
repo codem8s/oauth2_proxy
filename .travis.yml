@@ -12,6 +12,7 @@ env:
   - REPO="codem8s/oauth2-proxy"
   - VERSION=0.0.1
   - COMMIT=${TRAVIS_COMMIT::6}
+  - SOURCE_FOLDER=${HOME}/gopath/src/github.com/bitly/oauth2_proxy
   # Quay user
   - secure: l+3BiUEv8qlMQt5OHr8ullUmEyru3b01tMANarXPkgo0TTof0rL0bUWyigChL7Z6pXG52husgqRvJHL+F4slJVBCa40qlauyx+3YBoRENTZXzx9qi3sU+oQEVI1a301BMAkNPQMycpbDVOoLQ+oABavHfzCp8Tj36vylAhH2FzDL2KbpJV7y8VPzPleSY56O3sAuEydbUYD9wHWlybhDk32qlu10LMGpKvmnL7/QChq2nGqApHDme3GcALT9QIJXRNezravFBb5/6L83kXAeKZiHdo8x7heYQ7oI+qzhc1nqGJQeQR8ta18KgGvjXE69aJm1Syd5fwH0U8SJUoecpc0noM5emqswpXSVkCPgkL9odyFkQEfpW8PcKu6PS0+/lVSufsNnafiuKvLrXQhTZPPjhLNzWV111DMi6Jh9JhmwxZ2bXcCAeS4PsYyIhtGq4JeaYWHfovhO0+gDW6Sz2fj2wpM9bW5qfP72dLsnyTWtJzMGpkT2i8fKTs6EZpXdTvq2/ENQ2qnXEzSt9s4oqlZoT89KvB3Tger2gJYAZM5+kFqkbBGvV1Dd1vv57ovatgyM9SwhLhp56peFJdnYrf0KL/RK2e3+QJsVtURnG4rKiwKtTbjKG/gG5aDw/S6616o6SKAGDctACNRQqX2jCmnuG7m+Ihl8VmHcUoLdxhY=
   # Quay pass
@@ -21,8 +22,9 @@ matrix:
   fast_finish: true
 
 before_install:
-- rsync -az ${TRAVIS_BUILD_DIR}/ $HOME/gopath/src/github.com/bitly/oauth2_proxy/
-- cd $HOME/gopath/src/github.com/bitly/oauth2_proxy
+- mkdir -p ${SOURCE_FOLDER}
+- rsync -az ${TRAVIS_BUILD_DIR}/ ${SOURCE_FOLDER}
+- cd ${SOURCE_FOLDER}
 - go get -u github.com/golang/dep/cmd/dep
 
 install:
