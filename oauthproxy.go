@@ -13,10 +13,11 @@ import (
 	"regexp"
 	"strings"
 	"time"
-
 	"github.com/bitly/oauth2_proxy/cookie"
 	"github.com/bitly/oauth2_proxy/providers"
 	"github.com/mbland/hmacauth"
+
+	internalerrors "github.com/bitly/oauth2_proxy/errors"
 )
 
 const SignatureHeader = "GAP-Signature"
@@ -35,23 +36,23 @@ var SignatureHeaders []string = []string{
 }
 
 type OAuthProxy struct {
-	CookieSeed     string
-	CookieName     string
-	CSRFCookieName string
-	CookieDomain   string
-	CookieSecure   bool
-	CookieHttpOnly bool
-	CookieExpire   time.Duration
-	CookieRefresh  time.Duration
-	Validator      func(string) bool
+	CookieSeed          string
+	CookieName          string
+	CSRFCookieName      string
+	CookieDomain        string
+	CookieSecure        bool
+	CookieHttpOnly      bool
+	CookieExpire        time.Duration
+	CookieRefresh       time.Duration
+	Validator           func(string) bool
 
-	RobotsPath        string
-	PingPath          string
-	SignInPath        string
-	SignOutPath       string
-	OAuthStartPath    string
-	OAuthCallbackPath string
-	AuthOnlyPath      string
+	RobotsPath          string
+	PingPath            string
+	SignInPath          string
+	SignOutPath         string
+	OAuthStartPath      string
+	OAuthCallbackPath   string
+	AuthOnlyPath        string
 
 	redirectURL         *url.URL // the url to receive requests at
 	provider            providers.Provider
@@ -292,7 +293,7 @@ func (p *OAuthProxy) makeCookie(req *http.Request, name string, value string, ex
 }
 
 func (p *OAuthProxy) ClearCSRFCookie(rw http.ResponseWriter, req *http.Request) {
-	http.SetCookie(rw, p.MakeCSRFCookie(req, "", time.Hour*-1, time.Now()))
+	http.SetCookie(rw, p.MakeCSRFCookie(req, "", time.Hour * -1, time.Now()))
 }
 
 func (p *OAuthProxy) SetCSRFCookie(rw http.ResponseWriter, req *http.Request, val string) {
@@ -300,7 +301,7 @@ func (p *OAuthProxy) SetCSRFCookie(rw http.ResponseWriter, req *http.Request, va
 }
 
 func (p *OAuthProxy) ClearSessionCookie(rw http.ResponseWriter, req *http.Request) {
-	http.SetCookie(rw, p.MakeSessionCookie(req, "", time.Hour*-1, time.Now()))
+	http.SetCookie(rw, p.MakeSessionCookie(req, "", time.Hour * -1, time.Now()))
 }
 
 func (p *OAuthProxy) SetSessionCookie(rw http.ResponseWriter, req *http.Request, val string) {
@@ -531,7 +532,11 @@ func (p *OAuthProxy) OAuthCallback(rw http.ResponseWriter, req *http.Request) {
 	session, err := p.redeemCode(req.Host, req.Form.Get("code"))
 	if err != nil {
 		log.Printf("%s error redeeming code %s", remoteAddr, err)
-		p.ErrorPage(rw, 500, "Internal Error", "Internal Error")
+		if err == internalerrors.ErrUserUnauthorized {
+			p.ErrorPage(rw, 403, "Internal Error", "You are not authorized to access this website. You are not belong to valid group.")
+		} else {
+			p.ErrorPage(rw, 500, "Internal Error", "Internal Error")
+		}
 		return
 	}
 

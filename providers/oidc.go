@@ -8,6 +8,7 @@ import (
 	"golang.org/x/oauth2"
 
 	oidc "github.com/coreos/go-oidc"
+	"github.com/bitly/oauth2_proxy/errors"
 )
 
 type OIDCProvider struct {
@@ -51,6 +52,7 @@ func (p *OIDCProvider) Redeem(redirectURL, code string) (s *SessionState, err er
 	var claims struct {
 		Email    string `json:"email"`
 		Verified *bool  `json:"email_verified"`
+		Groups   []string `json:"groups"`
 	}
 	if err := idToken.Claims(&claims); err != nil {
 		return nil, fmt.Errorf("failed to parse id_token claims: %v", err)
@@ -61,6 +63,18 @@ func (p *OIDCProvider) Redeem(redirectURL, code string) (s *SessionState, err er
 	}
 	if claims.Verified != nil && !*claims.Verified {
 		return nil, fmt.Errorf("email in id_token (%s) isn't verified", claims.Email)
+	}
+
+	if p.OIDCAllowedGroupsRegexp != nil {
+		groupMatched := false
+		for _, groupName := range claims.Groups {
+			if p.OIDCAllowedGroupsRegexp.MatchString(groupName) {
+				groupMatched = true
+			}
+		}
+		if !groupMatched {
+			return nil, errors.ErrUserUnauthorized
+		}
 	}
 
 	s = &SessionState{
